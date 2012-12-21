@@ -18,8 +18,8 @@ GameObject.prototype.update = function (dt, g) {
 
 GameObject.prototype.draw = function (g) {
     g.ctx.save();
-    g.ctx.scale(this.scale, this.scale);
     g.ctx.translate(this.x, this.y);
+    g.ctx.scale(this.scale, this.scale);
     g.ctx.rotate(this.rot);
     this.drawImpl(g);
     g.ctx.restore();
