@@ -68,6 +68,23 @@ var cmp = function (a, b) {
 };
 
 /**
+ * Factorial.
+ */
+var factorial = function (n) {
+    if (n < 0) {
+        return null;
+    } else if (n < 2) {
+        return 1;
+    } else {
+        var i, r = 1;
+        for (i = 2; i < n; i++) {
+            r *= i;
+        }
+        return r;
+    }
+};
+
+/**
  * Takes a function f of one argument that returns a comparable value,
  * and returns a function of two arguments that compares the arguments
  * based on the values returned by f.
@@ -77,6 +94,103 @@ var key = function (f) {
         return cmp(f(a), f(b));
     };
 };
+
+/**
+ * A function that takes a function and any number of arguments, and returns
+ * a function that takes any number of arguments, and calls the passed in
+ * function with both the arguments passed to bind, and the arguments passed
+ * to the returned function. Useful for creating closures for variables in a
+ * loop that will be changed by the time the function is called.
+ */
+var bind = function (f) {
+    var args = [];
+    var i;
+    for (i = 1; i < arguments.length; i++) {
+        args.push(arguments[i]);
+    }
+
+    return function () {
+        var i, args2 = args.slice(0);
+        for (i = 0; i < arguments.length; i++) {
+            args2.push(arguments[i]);
+        }
+        return f.apply(null, args2);
+    };
+};
+
+/**
+ * Turns all input arrays into an array of tuples of the corresponding items
+ * in the input arrays. Limited by the shortest input array.
+ */
+var zip = function () {
+    var res = [];
+    var j = 0, i, tuple;
+    while (true) {
+        tuple = [];
+        for (i = 0; i < arguments.length; i++) {
+            if (arguments[i][j] === undefined) {
+                break;
+            }
+            tuple.push(arguments[i][j]);
+        }
+
+        if (!tuple) {
+            break;
+        }
+
+        res.push(tuple);
+        j++;
+    }
+    return res;
+};
+
+/**
+ * Returns the index of the j'th item in the i'th permutation of n elements.
+ *
+ * @param n The number of items being permuted.
+ * @param i The current permutation [0, n^n).
+ * @param j The index in the n items that is being filled in.
+ */
+var permutationIndex = function (n, i, j) {
+    var index = i % Math.pow(n, j + 1) / Math.pow(n, j);
+    return Math.floor(index);
+};
+
+/**
+ * Takes an array and returns an array of all possible permutations of the
+ * input array.
+ */
+var permutations = function (arr) {
+    var perms = [];
+    var n = Math.pow(arr.length, arr.length);
+    var i, j, perm, index;
+    for (i = 0; i < n; i++) {
+        perm = [];
+        for (j = 0; j < arr.length; j++) {
+            perm.push(arr[permutationIndex(arr.length, i, j)]);
+        }
+        perms.push(perm);
+    }
+    return perms;
+};
+
+/**
+ * Returns the i'th permutation of arr. More memory efficient than permutations
+ * if all you need is iteration.
+ */
+var permutation = function (arr, i) {
+    if (i >= Math.pow(arr.length, arr.length)) {
+        return;
+    }
+
+    var perm = [];
+    var j;
+    for (j = 0; j < arr.length; j++) {
+        perm.push(arr[permutationIndex(arr.length, i, j)]);
+    }
+    return perm;
+};
+
 
 /**
  * Converts rgb colors [0-255] to hsl ([0-360), [0-1], [0-1]).
