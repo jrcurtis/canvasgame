@@ -54,6 +54,19 @@ var clamp = function (x, min, max) {
 };
 
 /**
+ * Returns -1, 0, or 1 to indicate the sign of the input argument.
+ */
+var sgn = function (x) {
+    if (x < 0) {
+        return -1;
+    } else if (x > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+};
+
+/**
  * Compares a and b, returning 1, 0, or -1 to indicate a being greater,
  * equal, or less than b.
  */
