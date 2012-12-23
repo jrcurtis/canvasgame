@@ -1,8 +1,14 @@
 
 var Vector = function (x, y, z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
+    if (x instanceof Vector) {
+        this.x = x.x;
+        this.y = x.y;
+        this.z = x.z;
+    } else {
+        this.x = x || 0;
+        this.y = y || 0;
+        this.z = z || 0;
+    }
 };
 
 (function () {
@@ -15,10 +21,9 @@ var Vector = function (x, y, z) {
         properties[name] = bind(function (fields) {
             return {
                 get: function () {
-                    var vs = fields.map(function (c) {
-                        return this[c];
-                    }, this);
-                    return new Vector(vs[0], vs[1], vs[2]);
+                    return new Vector(this[fields[0]],
+                                      this[fields[1]],
+                                      this[fields[2]]);
                 },
                 set: function (v) {
                     zip(fields, v.values).forEach(function (val) {
@@ -62,8 +67,16 @@ Vector.prototype.add = function (v) {
     return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
 };
 
+Vector.prototype.sub = function (v) {
+    return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
+};
+
 Vector.prototype.mul = function (x) {
-    return new Vector(this.x * x, this.y * y, this.z * z);
+    return new Vector(this.x * x, this.y * x, this.z * x);
+};
+
+Vector.prototype.div = function (x) {
+    return new Vector(this.x / x, this.y / x, this.z / x);
 };
 
 Vector.prototype.cross = function (v) {
@@ -88,5 +101,12 @@ Vector.prototype.normalize = function () {
 
 Vector.prototype.projection = function (v) {
     return v.mul(this.dot(v) / v.dot(v));
+};
+
+Vector.prototype.distance = function (v) {
+    var dx = this.x - v.x;
+    var dy = this.y - v.y;
+    var dz = this.z - v.z;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
 };
 
