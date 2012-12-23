@@ -8,12 +8,15 @@ var GameObject = function (spec) {
     this.x = spec.x || 0;
     this.y = spec.y || 0;
     this.z = spec.z || 0;
+    this.loc = new Vector(this.x, this.y, this.z);
     this.rot = spec.rot || 0;
     this.scale = spec.scale || 1;
 };
 
 GameObject.prototype.update = function (dt, g) {
-    
+    this.loc.x = this.x;
+    this.loc.y = this.y;
+    this.loc.z = this.z;
 };
 
 GameObject.prototype.draw = function (g) {
@@ -48,6 +51,8 @@ var Game = function (spec) {
     this.ctx = this.canvas.getContext("2d");
 
     this.objects = [];
+    this.images = {};
+    this.resourcesLoading = 0;
 
     setInterval(function () {
         that.update(that.dt)
@@ -56,6 +61,10 @@ var Game = function (spec) {
 
 Game.prototype.update = function (dt) {
     var that = this;
+
+    if (this.resourcesLoading > 0) {
+        return;
+    }
 
     this.time += dt;
     this.ctx.fillStyle = "#000";
@@ -78,5 +87,27 @@ Game.prototype.addObject = function (o) {
 
 Game.prototype.addObjects = function (os) {
     this.objects = this.objects.concat(os);
+};
+
+Game.prototype.loadImages = function (paths) {
+    paths.forEach(function (path) {
+        var img = new Image();
+
+        var that = this;
+        img.onload = function () {
+            that.images[path.substr(0, path.indexOf("."))] = img;
+            that.resourcesLoading--;
+            if (that.resourcesLoading === 0) {
+                that.onload();
+            }
+        };
+
+        img.src = path;
+        this.resourcesLoading++;
+    }, this);
+};
+
+Game.prototype.onload = function () {
+
 };
 
