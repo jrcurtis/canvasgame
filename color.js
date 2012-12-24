@@ -1,4 +1,13 @@
 
+if (!"".startsWith) {
+    /**
+     * Does the string s match the prefix of this string?
+     */
+    String.prototype.startsWith = function (s) {
+        return this.substr(0, s.length) == s;
+    }
+}
+
 /**
  * A random float between min and max.
  *
@@ -102,7 +111,7 @@ var factorial = function (n) {
  * and returns a function of two arguments that compares the arguments
  * based on the values returned by f.
  */
-var key = function (f) {
+var sortKey = function (f) {
     return function (a, b) {
         return cmp(f(a), f(b));
     };
@@ -170,16 +179,17 @@ var permutationIndex = function (n, i, j) {
 };
 
 /**
- * Takes an array and returns an array of all possible permutations of the
- * input array.
+ * Takes an array and returns an array of all possible permutations of size size
+ * of the input array.
  */
-var permutations = function (arr) {
+var permutations = function (arr, size) {
+    size = size || arr.length;
     var perms = [];
-    var n = Math.pow(arr.length, arr.length);
+    var n = Math.pow(arr.length, size);
     var i, j, perm, index;
     for (i = 0; i < n; i++) {
         perm = [];
-        for (j = 0; j < arr.length; j++) {
+        for (j = 0; j < size; j++) {
             perm.push(arr[permutationIndex(arr.length, i, j)]);
         }
         perms.push(perm);
@@ -191,14 +201,15 @@ var permutations = function (arr) {
  * Returns the i'th permutation of arr. More memory efficient than permutations
  * if all you need is iteration.
  */
-var permutation = function (arr, i) {
-    if (i >= Math.pow(arr.length, arr.length)) {
+var permutation = function (arr, i, size) {
+    size = size || arr.length;
+    if (i >= Math.pow(arr.length, size)) {
         return;
     }
 
     var perm = [];
     var j;
-    for (j = 0; j < arr.length; j++) {
+    for (j = 0; j < size; j++) {
         perm.push(arr[permutationIndex(arr.length, i, j)]);
     }
     return perm;
