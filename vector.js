@@ -112,3 +112,23 @@ Vector.prototype.distance = function (v) {
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
 };
 
+/**
+ * Returns the winding (true for clockwise, false for counter-clockwise) of the given
+ * path, which is assumed to be an array of vectors.
+ */
+var winding = function (path) {
+    if (path.length < 3) {
+        return true;
+    }
+
+    var i, j, sum = 0;
+    for (i = 0; i < path.length; i++) {
+        j = (i + 1) % path.length;
+        sum += (path[j].x - path[i].x) * (path[j].y - path[i].y);
+    }
+
+    return sum > 0;
+};
+
+
+
