@@ -215,7 +215,6 @@ var permutation = function (arr, i, size) {
     return perm;
 };
 
-
 /**
  * Converts rgb colors [0-255] to hsl ([0-360), [0-1], [0-1]).
  */

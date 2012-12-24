@@ -5,6 +5,7 @@
 var GameObject = function (spec) {
     spec = spec || {};
 
+    this.game = spec.game || null;
     this.x = spec.x || 0;
     this.y = spec.y || 0;
     this.z = spec.z || 0;
@@ -59,14 +60,37 @@ var Game = function (spec) {
     this.events = {};
     this.mouseLoc = new Vector();
 
+    var touchToMouse = function (e) {
+        return {
+            pageX: e.touches[0].pageX,
+            pageY: e.touches[0].pageY,
+            button: 0
+        };
+    };
+
     this.canvas.onmousedown = function (e) {
+        that.onmousedown(e);
+        return false;
+    };
+    this.canvas.ontouchstart = function (e) {
+        e = touchToMouse(e);
+        that.onmousemove(e);
         that.onmousedown(e);
     };
     this.canvas.onmouseup = function (e) {
         that.onmouseup(e);
+        return false;
+    };
+    this.canvas.ontouchend = function (e) {
+        that.onmouseup({ button: 0 });
     };
     this.canvas.onmousemove = function (e) {
         that.onmousemove(e);
+        e.preventDefault();
+    };
+    this.canvas.ontouchmove = function (e) {
+        that.onmousemove(touchToMouse(e));
+        return false;
     };
     this.canvas.parentNode.onkeydown = function (e) {
         that.onkeydown(e);
@@ -118,11 +142,14 @@ Game.prototype.update = function (dt) {
 };
 
 Game.prototype.addObject = function (o) {
+    o.game = this;
     this.objects.push(o);
 };
 
 Game.prototype.addObjects = function (os) {
-    this.objects = this.objects.concat(os);
+    os.forEach(function (o) {
+        this.addObject(o)
+    }, this);
 };
 
 Game.prototype.removeObject = function (o) {
