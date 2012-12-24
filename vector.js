@@ -14,25 +14,23 @@ var Vector = function (x, y, z) {
 (function () {
     var properties = {};
     var letters = ["x", "y", "z"];
+    var swizzles = permutations(letters).concat(permutations(letters, 2));
 
-    var i = 0, fields, name;
-    while ((fields = permutation(letters, i++)) !== undefined) {
-        name = fields.join("");
-        properties[name] = bind(function (fields) {
-            return {
-                get: function () {
-                    return new Vector(this[fields[0]],
-                                      this[fields[1]],
-                                      this[fields[2]]);
-                },
-                set: function (v) {
-                    zip(fields, v.values).forEach(function (val) {
-                        this[val[0]] = val[1];
-                    }, this);
-                }
-            };
-        }, fields)();
-    }
+    swizzles.forEach(function (fields) {
+        var name = fields.join("");
+        properties[name] = {
+            get: function () {
+                return new Vector(this[fields[0]],
+                                  this[fields[1]],
+                                  this[fields[2]]);
+            },
+            set: function (v) {
+                zip(fields, v.values).forEach(function (val) {
+                    this[val[0]] = val[1];
+                }, this);
+            }
+        };
+    }, this);
 
     properties["values"] = {
         get: function () {
@@ -97,6 +95,10 @@ Vector.prototype.normalize = function () {
     this.x /= m;
     this.y /= m;
     this.z /= m;
+};
+
+Vector.prototype.angle = function (v) {
+    return Math.acos(this.dot(v) / (this.magnitude * v.magnitude));
 };
 
 Vector.prototype.projection = function (v) {
