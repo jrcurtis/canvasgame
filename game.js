@@ -12,6 +12,8 @@ var GameObject = function (spec) {
     this.loc = new Vector(this.x, this.y, this.z);
     this.rot = spec.rot || 0;
     this.scale = spec.scale || 1;
+    this.scaleX = spec.scaleX || null;
+    this.scaleY = spec.scaleY || null;
 };
 
 GameObject.prototype.update = function (dt, g) {
@@ -23,7 +25,7 @@ GameObject.prototype.update = function (dt, g) {
 GameObject.prototype.draw = function (g) {
     g.ctx.save();
     g.ctx.translate(this.x, this.y);
-    g.ctx.scale(this.scale, this.scale);
+    g.ctx.scale(this.scaleX || this.scale, this.scaleY || this.scale);
     g.ctx.rotate(this.rot);
     this.drawImpl(g);
     g.ctx.restore();
@@ -92,10 +94,10 @@ var Game = function (spec) {
         that.onmousemove(touchToMouse(e));
         return false;
     };
-    this.canvas.parentNode.onkeydown = function (e) {
+    document.body.onkeydown = function (e) {
         that.onkeydown(e);
     };
-    this.canvas.parentNode.onkeyup = function (e) {
+    document.body.onkeyup = function (e) {
         that.onkeyup(e);
     };
 
