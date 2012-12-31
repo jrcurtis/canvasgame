@@ -51,6 +51,14 @@ var Vector = function (x, y, z) {
         }
     };
 
+    properties["magnitudeSqr"] = {
+        get: function () {
+            return (this.x * this.x
+                    + this.y * this.y
+                    + this.z * this.z);
+        }
+    };
+
     properties["nomalized"] = {
         get: function () {
             var m = this.magnitude;
@@ -110,6 +118,13 @@ Vector.prototype.distance = function (v) {
     var dy = this.y - v.y;
     var dz = this.z - v.z;
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
+};
+
+Vector.prototype.distanceSqr = function (v) {
+    var dx = this.x - v.x;
+    var dy = this.y - v.y;
+    var dz = this.z - v.z;
+    return dx * dx + dy * dy + dz * dz;
 };
 
 /**
