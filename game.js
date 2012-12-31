@@ -146,7 +146,7 @@ Game.prototype.update = function (dt) {
     this.ctx.save()
     if (this.camera) {
         this.camera.update(dt, this);
-        this.ctx.translate(this.camera.x + this.canvas.width / 2,
+        this.ctx.translate(-this.camera.x + this.canvas.width / 2,
                            this.camera.y - this.canvas.height / 2);
         this.ctx.scale(1 / (this.camera.scaleX),
                        1 / (this.camera.scaleY));
@@ -273,7 +273,7 @@ Game.prototype.onmousemove = function (e) {
     var y = e.pageY - this.canvasOffset.top;
     if (this.camera) {
         this.mouseLoc.x = (x - this.canvas.width / 2)
-            * this.camera.scaleX - this.camera.x;
+            * this.camera.scaleX + this.camera.x;
         this.mouseLoc.y = (y - this.canvas.height / 2)
             * this.camera.scaleY + this.camera.y;
     } else {
