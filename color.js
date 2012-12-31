@@ -107,15 +107,24 @@ var factorial = function (n) {
 };
 
 /**
- * Takes a function f of one argument that returns a comparable value,
- * and returns a function of two arguments that compares the arguments
- * based on the values returned by f.
+ * Takes a number of functions of one argument that returns a comparable value,
+ * and returns a function of two arguments that compares the arguments based on
+ * the values returned by f, returning the first comparision that is not equal.
  */
-var sortKey = function (f) {
+var sortKey = function () {
+    var args = arguments;
     return function (a, b) {
-        return cmp(f(a), f(b));
+        var i, f, c;
+        for (i = 0; i < args.length; i++) {
+            f = args[i];
+            c = cmp(f(a), f(b));
+            if (c !== 0) {
+                return c;
+            }
+        }
+        return 0;
     };
-};
+}
 
 /**
  * A function that takes a function and any number of arguments, and returns
@@ -164,6 +173,33 @@ var zip = function () {
         j++;
     }
     return res;
+};
+
+/**
+ * 
+ */
+var makeEnum = function (o, keys, type) {
+    var start;
+    var next;
+    switch (type) {
+        case "pot":
+            start = 1;
+            next = function (n) { return 2 * n; };
+            break;
+
+        case "asc":
+        default:
+            start = 0;
+            next = function (n) { return n + 1; }
+            break;
+    }
+
+    var n = start;
+    var i;
+    for (i = 0; i < keys.length; i++) {
+        o[keys[i]] = n;
+        n = next(n);
+    }
 };
 
 /**
