@@ -20,12 +20,14 @@ GameObject.prototype.update = function (dt, g) {
     this.loc.x = this.x;
     this.loc.y = this.y;
     this.loc.z = this.z;
+    this.scaleX = this.scaleX || this.scale;
+    this.scaleY = this.scaleY || this.scale;
 };
 
 GameObject.prototype.draw = function (g) {
     g.ctx.save();
     g.ctx.translate(this.x, this.y);
-    g.ctx.scale(this.scaleX || this.scale, this.scaleY || this.scale);
+    g.ctx.scale(this.scaleX, this.scaleY);
     g.ctx.rotate(this.rot);
     this.drawImpl(g);
     g.ctx.restore();
@@ -44,7 +46,7 @@ var Game = function (spec) {
     spec = spec || {};
     var that = this;
 
-    this.fps = 30;
+    this.fps = spec.fps || 30;
     this.dt = 1 / this.fps;
     this.time = 0;
     this.debug = false;
@@ -55,6 +57,7 @@ var Game = function (spec) {
     this.canvasOffset = $(this.canvas).offset();
     this.ctx = this.canvas.getContext("2d");
 
+    this.camera = null;
     this.objects = [];
     this.images = {};
     this.resourcesLoading = 0;
@@ -78,6 +81,7 @@ var Game = function (spec) {
         e = touchToMouse(e);
         that.onmousemove(e);
         that.onmousedown(e);
+        return false;
     };
     this.canvas.onmouseup = function (e) {
         that.onmouseup(e);
@@ -85,6 +89,7 @@ var Game = function (spec) {
     };
     this.canvas.ontouchend = function (e) {
         that.onmouseup({ button: 0 });
+        return false;
     };
     this.canvas.onmousemove = function (e) {
         that.onmousemove(e);
@@ -138,9 +143,21 @@ Game.prototype.update = function (dt) {
 
     this.objects.sort(sortKey(function (o) { return o.z; }));
 
+    this.ctx.save()
+    if (this.camera) {
+        this.camera.update(dt, this);
+        this.ctx.translate(this.camera.x + this.canvas.width / 2,
+                           this.camera.y - this.canvas.height / 2);
+        this.ctx.scale(1 / (this.camera.scaleX),
+                       1 / (this.camera.scaleY));
+        this.ctx.rotate(-this.camera.rot);
+    }
+
     this.objects.forEach(function (o) {
         o.draw(that);
     });
+
+    this.ctx.restore();
 };
 
 Game.prototype.addObject = function (o) {
@@ -252,8 +269,17 @@ Game.prototype.onmouseup = function (e) {
 };
 
 Game.prototype.onmousemove = function (e) {
-    this.mouseLoc.x = e.pageX - this.canvasOffset.left;
-    this.mouseLoc.y = e.pageY - this.canvasOffset.top;
+    var x = e.pageX - this.canvasOffset.left;
+    var y = e.pageY - this.canvasOffset.top;
+    if (this.camera) {
+        this.mouseLoc.x = (x - this.canvas.width / 2)
+            * this.camera.scaleX - this.camera.x;
+        this.mouseLoc.y = (y - this.canvas.height / 2)
+            * this.camera.scaleY + this.camera.y;
+    } else {
+        this.mouseLoc.x = x;
+        this.mouseLoc.y = y;
+    }
 };
 
 Game.prototype.onkeydown = function (e) {
