@@ -59,7 +59,7 @@ var Vector = function (x, y, z) {
         }
     };
 
-    properties["nomalized"] = {
+    properties["normalized"] = {
         get: function () {
             var m = this.magnitude;
             return new Vector(this.x / m, this.y / m, this.z / m);
