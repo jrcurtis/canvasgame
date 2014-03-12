@@ -51,7 +51,7 @@ var Game = function (spec) {
     this.time = 0;
     this.debug = false;
 
-    this.canvas = $("#game-canvas").get(0);
+    this.canvas = document.getElementById("#game-canvas");
     this.canvas.width = spec.width || 800;
     this.canvas.height = spec.height || 600;
     this.canvasOffset = $(this.canvas).offset();
